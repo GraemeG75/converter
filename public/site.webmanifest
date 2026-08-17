@@ -1,0 +1,17 @@
+{
+  "name": "Guid.Studio Universal Unit Converter",
+  "short_name": "Guid Converter",
+  "description": "Universal unit converter web application for length, distance, coordinates, color formats, data sizes, Roman numerals, UUID/GUIDs, typography, and base conversions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#863bff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

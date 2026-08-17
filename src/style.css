@@ -1048,3 +1048,19 @@ body {
   image-rendering: pixelated;
 }
 
+.bmac-btn {
+  background: rgba(255, 221, 0, 0.12) !important;
+  border-color: rgba(255, 221, 0, 0.4) !important;
+  color: #ffdd00 !important;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.bmac-btn:hover {
+  background: #ffdd00 !important;
+  color: #111827 !important;
+  box-shadow: 0 0 16px rgba(255, 221, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+
