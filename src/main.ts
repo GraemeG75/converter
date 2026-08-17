@@ -96,28 +96,62 @@ function initApp(): void {
     modalSlot.appendChild(drawerEl);
   };
 
-  // Render Header
+  // Render Initial View
+  const initialCategory = getCategoryById(appStateManager.getState().activeCategory);
   renderHeader(headerSlot, openSearchModal, openHistoryDrawer);
+  renderCategoryNav(navSlot, (catId) => {
+    appStateManager.setState({ activeCategory: catId });
+  });
+  renderConverterCard(mainSlot, initialCategory);
 
-  // Subscribe to State Changes
+  let currentTheme = appStateManager.getState().theme;
+  let currentCategory = appStateManager.getState().activeCategory;
+  let currentLanguage = appStateManager.getState().language;
+  let transitionTimer: ReturnType<typeof setTimeout> | null = null;
+
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  updateCategorySEO(currentCategory);
+
+  // Subscribe to State Changes with smooth theme transition
   appStateManager.subscribe((state) => {
-    document.documentElement.setAttribute('data-theme', state.theme);
+    const themeChanged = state.theme !== currentTheme;
+    const categoryChanged = state.activeCategory !== currentCategory;
+    const languageChanged = state.language !== currentLanguage;
 
-    // Update URL hash for indexable deep-linking
-    if (window.location.hash !== `#${state.activeCategory}`) {
-      history.replaceState(null, '', `#${state.activeCategory}`);
+    if (themeChanged) {
+      document.documentElement.classList.add('theme-transitioning');
+      document.documentElement.setAttribute('data-theme', state.theme);
+
+      if (transitionTimer) clearTimeout(transitionTimer);
+      transitionTimer = setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 480);
+
+      currentTheme = state.theme;
+      renderHeader(headerSlot, openSearchModal, openHistoryDrawer);
     }
 
-    // Dynamic SEO Metadata update (title, description, canonical link, OG tags, JSON-LD)
-    updateCategorySEO(state.activeCategory);
+    if (categoryChanged || languageChanged) {
+      if (window.location.hash !== `#${state.activeCategory}`) {
+        history.replaceState(null, '', `#${state.activeCategory}`);
+      }
 
-    renderCategoryNav(navSlot, (catId) => {
-      appStateManager.setState({ activeCategory: catId });
-    });
+      updateCategorySEO(state.activeCategory);
 
-    const activeCat = getCategoryById(state.activeCategory);
-    renderConverterCard(mainSlot, activeCat);
-    renderHeader(headerSlot, openSearchModal, openHistoryDrawer);
+      renderCategoryNav(navSlot, (catId) => {
+        appStateManager.setState({ activeCategory: catId });
+      });
+
+      const activeCat = getCategoryById(state.activeCategory);
+      renderConverterCard(mainSlot, activeCat);
+
+      if (!themeChanged) {
+        renderHeader(headerSlot, openSearchModal, openHistoryDrawer);
+      }
+
+      currentCategory = state.activeCategory;
+      currentLanguage = state.language;
+    }
   });
 }
 

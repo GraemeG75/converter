@@ -51,6 +51,68 @@
   --card-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
+[data-theme="pride"] {
+  --bg-primary: #120524;
+  --bg-secondary: #210b3e;
+  --glass-bg: rgba(35, 14, 65, 0.78);
+  --glass-border: rgba(244, 114, 182, 0.35);
+  --glass-backdrop: blur(20px) saturate(200%);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #f3e8ff;
+  --text-muted: #c084fc;
+
+  --accent-primary: #d946ef;
+  --accent-primary-hover: #c026d3;
+  --accent-glow: rgba(217, 70, 239, 0.45);
+  --accent-secondary: #38bdf8;
+
+  --card-shadow: 0 20px 50px -10px rgba(217, 70, 239, 0.3), 0 0 25px rgba(168, 85, 247, 0.25);
+}
+
+[data-theme="pride"] body {
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(229, 0, 0, 0.22), transparent 40%),
+    radial-gradient(circle at 90% 15%, rgba(255, 141, 0, 0.22), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255, 238, 0, 0.14), transparent 45%),
+    radial-gradient(circle at 20% 85%, rgba(0, 129, 33, 0.22), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0, 76, 255, 0.22), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(118, 0, 137, 0.28), transparent 45%);
+  background-attachment: fixed;
+  animation: prideBgPulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes prideBgPulse {
+  0% { filter: hue-rotate(0deg) saturate(1.2); }
+  100% { filter: hue-rotate(360deg) saturate(1.5); }
+}
+
+[data-theme="pride"] .category-tab.active {
+  background: linear-gradient(135deg, rgba(229, 0, 0, 0.35), rgba(255, 141, 0, 0.3), rgba(0, 129, 33, 0.3), rgba(0, 76, 255, 0.35)) !important;
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
+  animation: prideTabGlow 4s linear infinite;
+}
+
+@keyframes prideTabGlow {
+  0% { box-shadow: 0 0 15px rgba(229, 0, 0, 0.6); }
+  33% { box-shadow: 0 0 15px rgba(0, 129, 33, 0.6); }
+  66% { box-shadow: 0 0 15px rgba(0, 76, 255, 0.6); }
+  100% { box-shadow: 0 0 15px rgba(229, 0, 0, 0.6); }
+}
+
+[data-theme="pride"] .pride-badge-glow {
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.8), 0 0 40px rgba(168, 85, 247, 0.6);
+  background: linear-gradient(135deg, #e50000, #ff8d00, #008121, #004cff, #760089);
+}
+
+[data-theme="pride"] .pride-theme-btn {
+  background: linear-gradient(135deg, rgba(229, 0, 0, 0.4), rgba(255, 141, 0, 0.4), rgba(0, 129, 33, 0.4), rgba(0, 76, 255, 0.4)) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -79,6 +141,32 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+/* Smooth Theme Transition Helper */
+html.theme-transitioning,
+html.theme-transitioning body,
+html.theme-transitioning .glass-panel,
+html.theme-transitioning .glass-header,
+html.theme-transitioning .glass-btn,
+html.theme-transitioning .category-tab,
+html.theme-transitioning .converter-card,
+html.theme-transitioning header,
+html.theme-transitioning nav,
+html.theme-transitioning main,
+html.theme-transitioning footer,
+html.theme-transitioning input,
+html.theme-transitioning select,
+html.theme-transitioning button,
+html.theme-transitioning svg,
+html.theme-transitioning span,
+html.theme-transitioning div {
+  transition: background-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              fill 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.45s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* Common Glassmorphism Utilities */
@@ -1049,11 +1137,17 @@ body {
 }
 
 .bmac-btn {
-  background: rgba(255, 221, 0, 0.12) !important;
-  border-color: rgba(255, 221, 0, 0.4) !important;
+  background: rgba(255, 221, 0, 0.15) !important;
+  border-color: rgba(255, 221, 0, 0.5) !important;
   color: #ffdd00 !important;
   font-weight: 600;
   transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .bmac-btn {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  color: #b45309 !important;
 }
 
 .bmac-btn:hover {
@@ -1061,6 +1155,13 @@ body {
   color: #111827 !important;
   box-shadow: 0 0 16px rgba(255, 221, 0, 0.4);
   transform: translateY(-1px);
+}
+
+[data-theme="light"] .bmac-btn:hover {
+  background: #ffdd00 !important;
+  border-color: #f59e0b !important;
+  color: #111827 !important;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
 }
 
 

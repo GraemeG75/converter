@@ -51,7 +51,7 @@ export interface AppState {
   activeCategory: string;
   precision: number; // Decimal places (0 to 10)
   scientificNotation: boolean;
-  theme: 'dark' | 'light';
+  theme: 'dark' | 'light' | 'pride';
   language: SupportedLanguage;
   favorites: string[]; // Category IDs or Unit Pair IDs
   history: HistoryItem[];
