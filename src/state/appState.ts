@@ -8,7 +8,7 @@ const defaultState: AppState = {
   scientificNotation: false,
   theme: 'dark',
   language: 'en',
-  favorites: ['length', 'temperatures', 'coordinates', 'color', 'number_bases'],
+  favorites: [],
   history: [],
   lastSelectedUnits: {}
 };
