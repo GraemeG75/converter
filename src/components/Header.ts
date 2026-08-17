@@ -1,8 +1,11 @@
 import { appStateManager } from '../state/appState';
+import { t } from '../i18n';
+import type { SupportedLanguage } from '../engines/types';
 
 export function renderHeader(container: HTMLElement, onOpenSearch: () => void, onOpenHistory: () => void): void {
   const state = appStateManager.getState();
   const isDark = state.theme === 'dark';
+  const lang = state.language;
 
   container.innerHTML = `
     <header class="app-header glass-header">
@@ -13,29 +16,29 @@ export function renderHeader(container: HTMLElement, onOpenSearch: () => void, o
           </svg>
         </div>
         <div class="header-titles">
-          <h1>OmniConvert</h1>
-          <span class="header-tagline">Universal Unit Converter</span>
+          <h1>${t('appName', lang)}</h1>
+          <span class="header-tagline">${t('tagline', lang)}</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button id="searchBtn" class="header-btn glass-btn" title="Quick Search (Ctrl+K or /)">
+        <button id="searchBtn" class="header-btn glass-btn" title="${t('searchTitle', lang)}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span class="btn-label">Search</span>
+          <span class="btn-label">${t('search', lang)}</span>
           <kbd class="kbd-shortcut">Ctrl K</kbd>
         </button>
 
-        <button id="historyBtn" class="header-btn glass-btn" title="Conversion History & Favorites">
+        <button id="historyBtn" class="header-btn glass-btn" title="${t('historyTitle', lang)}">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          <span class="btn-label">History</span>
+          <span class="btn-label">${t('history', lang)}</span>
           ${state.history.length > 0 ? `<span class="badge-dot"></span>` : ''}
         </button>
 
-        <button id="themeToggleBtn" class="header-btn glass-btn icon-only" title="Toggle Dark/Light Mode">
+        <button id="themeToggleBtn" class="header-btn glass-btn icon-only" title="${t('themeToggleTitle', lang)}">
           ${isDark ? `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line>
@@ -50,6 +53,16 @@ export function renderHeader(container: HTMLElement, onOpenSearch: () => void, o
             </svg>
           `}
         </button>
+
+        <div class="lang-select-wrapper">
+          <select id="languageSelect" class="header-btn glass-select language-select" title="${t('selectLanguageTitle', lang)}">
+            <option value="en" ${lang === 'en' ? 'selected' : ''}>🇺🇸 EN</option>
+            <option value="de" ${lang === 'de' ? 'selected' : ''}>🇩🇪 DE</option>
+            <option value="es" ${lang === 'es' ? 'selected' : ''}>🇪🇸 ES</option>
+            <option value="fr" ${lang === 'fr' ? 'selected' : ''}>🇫🇷 FR</option>
+            <option value="it" ${lang === 'it' ? 'selected' : ''}>🇮🇹 IT</option>
+          </select>
+        </div>
       </div>
     </header>
   `;
@@ -62,5 +75,9 @@ export function renderHeader(container: HTMLElement, onOpenSearch: () => void, o
     const nextTheme = current === 'dark' ? 'light' : 'dark';
     appStateManager.setState({ theme: nextTheme });
     document.documentElement.setAttribute('data-theme', nextTheme);
+  });
+  container.querySelector('#languageSelect')?.addEventListener('change', (e) => {
+    const selectedLang = (e.target as HTMLSelectElement).value as SupportedLanguage;
+    appStateManager.setState({ language: selectedLang });
   });
 }

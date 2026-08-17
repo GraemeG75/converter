@@ -1,5 +1,6 @@
 import { ALL_CATEGORIES } from '../engines/registry';
 import { appStateManager } from '../state/appState';
+import { getCategoryTranslation } from '../i18n';
 
 const ICON_SVGS: Record<string, string> = {
   ruler: '<path d="M21 3H3v18h18V3zM7 7v4M11 7v2M15 7v4M19 7v2"/>',
@@ -34,13 +35,14 @@ export function renderCategoryNav(container: HTMLElement, onSelectCategory: (cat
           const isActive = cat.id === activeId;
           const iconSvg = ICON_SVGS[cat.icon] || ICON_SVGS.ruler;
           const isFav = state.favorites.includes(cat.id);
+          const catInfo = getCategoryTranslation(cat.id, state.language);
 
           return `
             <button class="category-tab ${isActive ? 'active' : ''}" data-id="${cat.id}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 ${iconSvg}
               </svg>
-              <span class="tab-name">${cat.name}</span>
+              <span class="tab-name">${catInfo.name}</span>
               ${isFav ? `<span class="fav-star" title="Favorited">★</span>` : ''}
             </button>
           `;
@@ -58,4 +60,10 @@ export function renderCategoryNav(container: HTMLElement, onSelectCategory: (cat
       }
     });
   });
+
+  // Auto-scroll active tab into view
+  const activeTab = container.querySelector('.category-tab.active');
+  if (activeTab) {
+    activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 }

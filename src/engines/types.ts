@@ -45,11 +45,15 @@ export interface HistoryItem {
   toSymbol: string;
 }
 
+export type SupportedLanguage = 'en' | 'de' | 'es' | 'fr' | 'it';
+
 export interface AppState {
   activeCategory: string;
   precision: number; // Decimal places (0 to 10)
   scientificNotation: boolean;
   theme: 'dark' | 'light';
+  language: SupportedLanguage;
   favorites: string[]; // Category IDs or Unit Pair IDs
   history: HistoryItem[];
+  lastSelectedUnits?: Record<string, { fromUnitId: string; toUnitId: string; inputValue?: string }>;
 }

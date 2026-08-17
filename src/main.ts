@@ -6,6 +6,7 @@ import { renderCategoryNav } from './components/CategoryNav';
 import { renderConverterCard } from './components/ConverterCard';
 import { renderSearchModal } from './components/SearchModal';
 import { renderHistoryDrawer } from './components/HistoryDrawer';
+import { renderFooter } from './components/Footer';
 
 function initApp(): void {
   const appContainer = document.getElementById('app');
@@ -16,13 +17,17 @@ function initApp(): void {
     <div id="headerSlot"></div>
     <div id="navSlot"></div>
     <main id="mainSlot"></main>
+    <div id="footerSlot"></div>
     <div id="modalSlot"></div>
   `;
 
   const headerSlot = document.getElementById('headerSlot') as HTMLElement;
   const navSlot = document.getElementById('navSlot') as HTMLElement;
   const mainSlot = document.getElementById('mainSlot') as HTMLElement;
+  const footerSlot = document.getElementById('footerSlot') as HTMLElement;
   const modalSlot = document.getElementById('modalSlot') as HTMLElement;
+
+  renderFooter(footerSlot);
 
   // Global Keyboard Shortcuts (Ctrl+K or / for Search)
   window.addEventListener('keydown', (e) => {

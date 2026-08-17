@@ -2,6 +2,7 @@ import type { CategoryDefinition, ConversionResult } from '../engines/types';
 import { performConversion } from '../engines/registry';
 import { appStateManager } from '../state/appState';
 import { showToast } from './Toast';
+import { t, getCategoryTranslation, getUnitNameTranslation } from '../i18n';
 
 // Visualizers
 import { renderProtractorVisualizer } from '../visualizers/protractorVisualizer';
@@ -21,10 +22,14 @@ export function renderConverterCard(
   currentInputValue?: string
 ): void {
   const state = appStateManager.getState();
-  const fromId = currentFromUnitId || category.defaultFromUnit;
-  const toId = currentToUnitId || category.defaultToUnit;
-  const inputVal = currentInputValue !== undefined ? currentInputValue : (category.defaultInputValue || '100');
+  const lang = state.language;
+  const storedUnits = state.lastSelectedUnits?.[category.id];
+  const fromId = currentFromUnitId || storedUnits?.fromUnitId || category.defaultFromUnit;
+  const toId = currentToUnitId || storedUnits?.toUnitId || category.defaultToUnit;
+  const inputVal = currentInputValue !== undefined ? currentInputValue : (storedUnits?.inputValue !== undefined ? storedUnits.inputValue : (category.defaultInputValue || '100'));
   const isFav = state.favorites.includes(category.id);
+
+  const catInfo = getCategoryTranslation(category.id, lang);
 
   // Perform calculation
   const result: ConversionResult = performConversion(
@@ -41,10 +46,10 @@ export function renderConverterCard(
       <!-- Category Card Header -->
       <div class="card-header">
         <div class="card-header-main">
-          <h2>${category.name}</h2>
-          <p class="category-desc">${category.description}</p>
+          <h2>${catInfo.name}</h2>
+          <p class="category-desc">${catInfo.description}</p>
         </div>
-        <button id="favToggleBtn" class="fav-btn ${isFav ? 'favorited' : ''}" title="${isFav ? 'Remove from Favorites' : 'Add to Favorites'}">
+        <button id="favToggleBtn" class="fav-btn ${isFav ? 'favorited' : ''}" title="${isFav ? t('favRemove', lang) : t('favAdd', lang)}">
           ★
         </button>
       </div>
@@ -53,32 +58,35 @@ export function renderConverterCard(
       <div class="converter-grid">
         <!-- Left Side: From Input -->
         <div class="converter-section">
-          <label class="section-label" for="fromValInput">Input Value</label>
+          <label class="section-label" for="fromValInput">${t('inputValue', lang)}</label>
           <div class="input-group">
             <input
               type="text"
               id="fromValInput"
               class="glass-input"
               value="${escapeHtml(inputVal)}"
-              placeholder="Enter value..."
+              placeholder="${t('enterValue', lang)}"
               autocomplete="off"
             />
           </div>
           <div class="select-group">
-            <label class="unit-label" for="fromUnitSelect">From Unit</label>
+            <label class="unit-label" for="fromUnitSelect">${t('fromUnit', lang)}</label>
             <select id="fromUnitSelect" class="glass-select">
-              ${category.units.map(u => `
-                <option value="${u.id}" ${u.id === fromId ? 'selected' : ''}>
-                  ${u.name} (${u.symbol})
-                </option>
-              `).join('')}
+              ${category.units.map(u => {
+                const uName = getUnitNameTranslation(u.id, u.name, lang);
+                return `
+                  <option value="${u.id}" ${u.id === fromId ? 'selected' : ''}>
+                    ${uName} (${u.symbol})
+                  </option>
+                `;
+              }).join('')}
             </select>
           </div>
         </div>
 
         <!-- Middle: Swap Button -->
         <div class="swap-divider">
-          <button id="swapUnitsBtn" class="swap-btn glass-btn" title="Swap From and To Units (Key: S)">
+          <button id="swapUnitsBtn" class="swap-btn glass-btn" title="${t('swapUnits', lang)}">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="17 1 21 5 17 9"></polyline>
               <line x1="3" y1="5" x2="21" y2="5"></line>
@@ -90,10 +98,10 @@ export function renderConverterCard(
 
         <!-- Right Side: Output Display -->
         <div class="converter-section">
-          <label class="section-label">Converted Output</label>
+          <label class="section-label">${t('convertedOutput', lang)}</label>
           <div class="output-box glass-output" id="outputBox">
             <span class="output-value">${escapeHtml(result.formattedOutput)}</span>
-            <button id="copyOutputBtn" class="copy-btn glass-btn" title="Copy Result to Clipboard">
+            <button id="copyOutputBtn" class="copy-btn glass-btn" title="${t('copyOutput', lang)}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -101,13 +109,16 @@ export function renderConverterCard(
             </button>
           </div>
           <div class="select-group">
-            <label class="unit-label" for="toUnitSelect">To Unit</label>
+            <label class="unit-label" for="toUnitSelect">${t('toUnit', lang)}</label>
             <select id="toUnitSelect" class="glass-select">
-              ${category.units.map(u => `
-                <option value="${u.id}" ${u.id === toId ? 'selected' : ''}>
-                  ${u.name} (${u.symbol})
-                </option>
-              `).join('')}
+              ${category.units.map(u => {
+                const uName = getUnitNameTranslation(u.id, u.name, lang);
+                return `
+                  <option value="${u.id}" ${u.id === toId ? 'selected' : ''}>
+                    ${uName} (${u.symbol})
+                  </option>
+                `;
+              }).join('')}
             </select>
           </div>
         </div>
@@ -121,7 +132,7 @@ export function renderConverterCard(
         </div>
 
         <div class="precision-controls">
-          <label for="precisionSelect" class="control-label">Decimals:</label>
+          <label for="precisionSelect" class="control-label">${t('precision', lang)}:</label>
           <select id="precisionSelect" class="glass-select-sm">
             ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(p => `
               <option value="${p}" ${p === state.precision ? 'selected' : ''}>${p}</option>
@@ -130,7 +141,7 @@ export function renderConverterCard(
 
           <label class="checkbox-label" title="Force Scientific Notation (e.g. 1.23e+4)">
             <input type="checkbox" id="scientificCheck" ${state.scientificNotation ? 'checked' : ''} />
-            <span>Scientific (1e+N)</span>
+            <span>${t('scientificNotation', lang)}</span>
           </label>
         </div>
       </div>
@@ -204,6 +215,7 @@ export function renderConverterCard(
   });
 
   fromSelect.addEventListener('change', () => {
+    appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
     appStateManager.addHistoryItem({
       categoryId: category.id,
       categoryName: category.name,
@@ -214,26 +226,33 @@ export function renderConverterCard(
     });
     triggerUpdate(true);
   });
-  toSelect.addEventListener('change', () => triggerUpdate(true));
+  toSelect.addEventListener('change', () => {
+    appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+    triggerUpdate(true);
+  });
 
   swapBtn.addEventListener('click', () => {
     const temp = fromSelect.value;
     fromSelect.value = toSelect.value;
     toSelect.value = temp;
+    appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
     triggerUpdate(true);
   });
 
   copyBtn.addEventListener('click', () => {
     const currentOutput = container.querySelector('#outputBox .output-value')?.textContent || result.formattedOutput;
     navigator.clipboard.writeText(currentOutput).then(() => {
-      showToast(`Copied "${currentOutput}" to clipboard`);
+      showToast(t('copiedToast', lang));
     }).catch(() => {
-      showToast(`Copied result!`);
+      showToast(t('copiedToast', lang));
     });
   });
 
   favBtn.addEventListener('click', () => {
     appStateManager.toggleFavorite(category.id);
+    const updatedFavs = appStateManager.getState().favorites;
+    const nowFav = updatedFavs.includes(category.id);
+    showToast(nowFav ? t('favAddedToast', lang) : t('favRemovedToast', lang));
     triggerUpdate(true);
   });
 

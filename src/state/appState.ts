@@ -7,8 +7,10 @@ const defaultState: AppState = {
   precision: 4,
   scientificNotation: false,
   theme: 'dark',
+  language: 'en',
   favorites: ['length', 'temperatures', 'coordinates', 'color', 'number_bases'],
-  history: []
+  history: [],
+  lastSelectedUnits: {}
 };
 
 class StateManager {
@@ -61,6 +63,14 @@ class StateManager {
       favs.push(categoryId);
     }
     this.setState({ favorites: favs });
+  }
+
+  public setCategoryUnits(catId: string, fromUnitId: string, toUnitId: string, inputValue?: string): void {
+    const updated = {
+      ...(this.state.lastSelectedUnits || {}),
+      [catId]: { fromUnitId, toUnitId, inputValue }
+    };
+    this.setState({ lastSelectedUnits: updated });
   }
 
   private notify(): void {
