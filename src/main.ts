@@ -8,13 +8,13 @@ import { renderSearchModal } from './components/SearchModal';
 import { renderHistoryDrawer } from './components/HistoryDrawer';
 import { renderFooter } from './components/Footer';
 import { injectGlobalJsonLd, updateCategorySEO } from './utils/seo';
-import { initAnalytics } from './firebase';
+import { initAnalytics, trackCategoryView } from './utils/analytics';
 
 function initApp(): void {
   const appContainer = document.getElementById('app');
   if (!appContainer) return;
 
-  // Initialize Firebase Analytics
+  // Initialize Analytics (Firebase + Google Analytics gtag.js)
   initAnalytics().catch(() => {});
 
   // Initialize Global JSON-LD Schema (WebSite with SearchAction + FAQ)
@@ -103,6 +103,7 @@ function initApp(): void {
     appStateManager.setState({ activeCategory: catId });
   });
   renderConverterCard(mainSlot, initialCategory);
+  trackCategoryView(initialCategory.id, initialCategory.name);
 
   let currentTheme = appStateManager.getState().theme;
   let currentCategory = appStateManager.getState().activeCategory;
@@ -144,6 +145,7 @@ function initApp(): void {
 
       const activeCat = getCategoryById(state.activeCategory);
       renderConverterCard(mainSlot, activeCat);
+      trackCategoryView(activeCat.id, activeCat.name);
 
       if (!themeChanged) {
         renderHeader(headerSlot, openSearchModal, openHistoryDrawer);

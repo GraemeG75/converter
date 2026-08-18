@@ -2,6 +2,7 @@ import { ALL_CATEGORIES } from '../engines/registry';
 import type { UnitDefinition, CategoryDefinition } from '../engines/types';
 import { appStateManager } from '../state/appState';
 import { t, getCategoryTranslation, getUnitNameTranslation } from '../i18n';
+import { trackSearch } from '../utils/analytics';
 
 export interface SearchResultItem {
   category: CategoryDefinition;
@@ -99,7 +100,16 @@ export function renderSearchModal(
     });
   };
 
-  input.addEventListener('input', () => renderResults(input.value));
+  let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  input.addEventListener('input', () => {
+    renderResults(input.value);
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      if (input.value.trim().length > 1) {
+        trackSearch(input.value.trim());
+      }
+    }, 500);
+  });
   closeBtn.addEventListener('click', onClose);
 
   backdrop.addEventListener('click', (e) => {

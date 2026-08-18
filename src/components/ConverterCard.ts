@@ -3,6 +3,7 @@ import { performConversion } from '../engines/registry';
 import { appStateManager } from '../state/appState';
 import { showToast } from './Toast';
 import { t, getCategoryTranslation, getUnitNameTranslation } from '../i18n';
+import { trackConversion } from '../utils/analytics';
 
 // Visualizers
 import { renderProtractorVisualizer } from '../visualizers/protractorVisualizer';
@@ -224,10 +225,12 @@ export function renderConverterCard(
       toValue: result.formattedOutput,
       toSymbol: toSelect.options[toSelect.selectedIndex].text
     });
+    trackConversion(category.id, fromSelect.value, toSelect.value);
     triggerUpdate(true);
   });
   toSelect.addEventListener('change', () => {
     appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+    trackConversion(category.id, fromSelect.value, toSelect.value);
     triggerUpdate(true);
   });
 
@@ -236,6 +239,7 @@ export function renderConverterCard(
     fromSelect.value = toSelect.value;
     toSelect.value = temp;
     appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+    trackConversion(category.id, fromSelect.value, toSelect.value);
     triggerUpdate(true);
   });
 

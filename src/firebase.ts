@@ -21,3 +21,4 @@ export async function initAnalytics() {
   }
   return null;
 }
+
