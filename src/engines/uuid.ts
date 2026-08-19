@@ -18,20 +18,44 @@ export function generateUUIDv7(timestampMs?: number): string {
   // 48-bit timestamp in hex (12 hex digits)
   const timeHex = now.toString(16).padStart(12, '0');
 
-  // Random 12 bits for rand_a with ver 7 (0x7xxx)
-  const randA = Math.floor(Math.random() * 4096).toString(16).padStart(3, '0');
+  const part1 = timeHex.slice(0, 8);  // 8 hex digits
+  const part2 = timeHex.slice(8, 12); // 4 hex digits
 
-  // Random bits for rand_b with variant 10xx (0x8xxx, 0x9xxx, 0xaxxx, 0xbxxx)
-  const variant = (8 + Math.floor(Math.random() * 4)).toString(16);
-  const randB = Math.floor(Math.random() * 0x0fff_ffff_ffff)
-    .toString(16)
-    .padStart(11, '0');
+  let randA: string;
+  let randB1: string;
+  let randB2: string;
 
-  const part1 = timeHex.slice(0, 8);
-  const part2 = timeHex.slice(8, 12);
-  const part3 = '7' + randA;
-  const part4 = variant + randB.slice(0, 3);
-  const part5 = randB.slice(3, 11);
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const bytes = new Uint8Array(10);
+    crypto.getRandomValues(bytes);
+
+    // 12 bits for rand_a (3 hex digits)
+    const valA = ((bytes[0] << 8) | bytes[1]) & 0x0fff;
+    randA = valA.toString(16).padStart(3, '0');
+
+    // Variant 10xx (0x8..0xB) + 3 hex chars from 12 bits
+    const varNibble = (8 + (bytes[2] >> 6)).toString(16);
+    const randB1Rest = (((bytes[2] & 0x0f) << 8) | bytes[3]).toString(16).padStart(3, '0');
+    randB1 = varNibble + randB1Rest; // EXACTLY 4 hex digits
+
+    // 12 hex digits for part5 from 6 bytes (bytes[4..9])
+    randB2 = Array.from(bytes.slice(4, 10)).map(b => b.toString(16).padStart(2, '0')).join(''); // EXACTLY 12 hex digits
+  } else {
+    // Fallback Math.random
+    randA = Math.floor(Math.random() * 4096).toString(16).padStart(3, '0');
+    const varNibble = (8 + Math.floor(Math.random() * 4)).toString(16);
+    const randB1Rest = Math.floor(Math.random() * 4096).toString(16).padStart(3, '0');
+    randB1 = varNibble + randB1Rest; // EXACTLY 4 hex digits
+
+    randB2 = '';
+    for (let i = 0; i < 12; i++) {
+      randB2 += Math.floor(Math.random() * 16).toString(16);
+    }
+  }
+
+  const part3 = '7' + randA; // EXACTLY 4 hex digits
+  const part4 = randB1;       // EXACTLY 4 hex digits
+  const part5 = randB2;       // EXACTLY 12 hex digits
 
   return `${part1}-${part2}-${part3}-${part4}-${part5}`;
 }
