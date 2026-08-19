@@ -1,7 +1,7 @@
 {
-  "name": "converter.us",
+  "name": "guid.studio",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.4",
   "type": "module",
   "scripts": {
     "version:bump": "node scripts/bump-version.js",

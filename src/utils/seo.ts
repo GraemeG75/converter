@@ -1,7 +1,7 @@
 import { getCategoryById } from '../engines/registry';
 
 const SITE_NAME = 'Guid.Studio Universal Unit Converter';
-const BASE_URL = 'https://converter.us';
+const BASE_URL = 'https://guid.studio';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.svg`;
 
 export interface CategorySEOMetadata {

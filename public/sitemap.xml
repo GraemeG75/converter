@@ -5,7 +5,7 @@
                             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <!-- Main Application Homepage -->
   <url>
-    <loc>https://converter.us/</loc>
+    <loc>https://guid.studio/</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -13,115 +13,115 @@
 
   <!-- Specific Unit Converter Tools -->
   <url>
-    <loc>https://converter.us/#length</loc>
+    <loc>https://guid.studio/#length</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://converter.us/#area</loc>
+    <loc>https://guid.studio/#area</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#volume</loc>
+    <loc>https://guid.studio/#volume</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#angles</loc>
+    <loc>https://guid.studio/#angles</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#temperatures</loc>
+    <loc>https://guid.studio/#temperatures</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://converter.us/#coordinates</loc>
+    <loc>https://guid.studio/#coordinates</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://converter.us/#data</loc>
+    <loc>https://guid.studio/#data</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#data_rate</loc>
+    <loc>https://guid.studio/#data_rate</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#speed</loc>
+    <loc>https://guid.studio/#speed</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#mass</loc>
+    <loc>https://guid.studio/#mass</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#pressure</loc>
+    <loc>https://guid.studio/#pressure</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#energy</loc>
+    <loc>https://guid.studio/#energy</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#power</loc>
+    <loc>https://guid.studio/#power</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#time</loc>
+    <loc>https://guid.studio/#time</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#color</loc>
+    <loc>https://guid.studio/#color</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://converter.us/#number_bases</loc>
+    <loc>https://guid.studio/#number_bases</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://converter.us/#typography</loc>
+    <loc>https://guid.studio/#typography</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#roman_unicode</loc>
+    <loc>https://guid.studio/#roman_unicode</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://converter.us/#uuid_guid</loc>
+    <loc>https://guid.studio/#uuid_guid</loc>
     <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://converter.us/sitemap.xml
+Sitemap: https://guid.studio/sitemap.xml
