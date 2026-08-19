@@ -1,4 +1,5 @@
 import kittenUrl from '../assets/kitten.png';
+import { APP_VERSION } from '../version';
 
 export function renderFooter(container: HTMLElement): void {
   const currentYear = new Date().getFullYear();
@@ -43,7 +44,7 @@ export function renderFooter(container: HTMLElement): void {
               <span>GitHub</span>
             </a>
             <span class="footer-badge">MIT License</span>
-            <span class="footer-badge">v1.0.0</span>
+            <span class="footer-badge">v${APP_VERSION}</span>
           </div>
         </div>
       </div>

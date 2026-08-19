@@ -1,11 +1,12 @@
 {
   "name": "converter.us",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
+    "version:bump": "node scripts/bump-version.js",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/bump-version.js && tsc && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && npx firebase-tools deploy",
     "deploy:hosting": "npm run build && npx firebase-tools deploy --only hosting"
