@@ -12,7 +12,7 @@ import { colorCategory, parseColorInput } from './color';
 import { numberBasesCategory, convertBase, getBaseRadix } from './numberBases';
 import { typographyCategory } from './typography';
 import { romanUnicodeCategory, intToRoman, romanToInt, charToUnicodeDetails } from './romanUnicode';
-import { uuidCategory, parseAndFormatUUID, NIL_GUID } from './uuid';
+import { uuidCategory, parseAndFormatUUID, generateUUIDv4, generateUUIDv7, NIL_GUID } from './uuid';
 
 // New Coding Engines
 import { hashEncodingCategory, decodeToPlaintext, encodeFromPlaintext } from './hashEncoding';
@@ -81,7 +81,7 @@ export function performConversion(
   }
 
   if (category.id === 'uuid_guid') {
-    return handleUuidConversion(toUnitId, inputValue, fromUnit, toUnit);
+    return handleUuidConversion(fromUnitId, toUnitId, inputValue, fromUnit, toUnit);
   }
 
   if (category.id === 'hash_encoding') {
@@ -288,16 +288,26 @@ function handleRomanUnicodeConversion(fromId: string, toId: string, inputStr: st
   };
 }
 
-function handleUuidConversion(toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
-  const parsed = parseAndFormatUUID(inputStr);
+function handleUuidConversion(_fromId: string, toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  let parsed = parseAndFormatUUID(inputStr);
+
   let out = parsed.normalized;
 
-  if (toId === 'uuid_nohyphens') out = parsed.noHyphens;
-  else if (toId === 'uuid_braces') out = parsed.braces;
-  else if (toId === 'uuid_nil') out = NIL_GUID;
+  if (toId === 'uuid_v4') {
+    out = parsed.version.includes('Version 4') ? parsed.normalized : generateUUIDv4();
+  } else if (toId === 'uuid_v7') {
+    out = parsed.version.includes('Version 7') ? parsed.normalized : generateUUIDv7();
+  } else if (toId === 'uuid_nohyphens') {
+    out = parsed.noHyphens;
+  } else if (toId === 'uuid_braces') {
+    out = parsed.braces;
+  } else if (toId === 'uuid_nil') {
+    out = NIL_GUID;
+  }
 
-  let detail = `${parsed.version} | ${parsed.variant}`;
-  if (parsed.timestamp) detail += ` | Timestamp: ${parsed.timestamp}`;
+  const outParsed = parseAndFormatUUID(out);
+  let detail = `${outParsed.version} | ${outParsed.variant}`;
+  if (outParsed.timestamp) detail += ` | Timestamp: ${outParsed.timestamp}`;
 
   return {
     fromValue: inputStr,
