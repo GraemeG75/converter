@@ -20,7 +20,7 @@ export interface CategoryDefinition {
   defaultInputValue?: string;
   units: UnitDefinition[];
   hasVisualizer?: boolean;
-  visualizerType?: 'protractor' | 'thermometer' | 'coordinate' | 'color' | 'bitboard' | 'transfer' | 'none';
+  visualizerType?: 'protractor' | 'thermometer' | 'coordinate' | 'color' | 'bitboard' | 'transfer' | 'jwt' | 'cron' | 'subnet' | 'permission' | 'fluid_css' | 'none';
   customConverter?: boolean; // If category uses non-standard multi-input forms (like Lat/Long DD to DMS, or File Transfer Time)
 }
 
