@@ -258,7 +258,12 @@ const CATEGORY_TRANSLATIONS: Record<SupportedLanguage, Record<string, { name: st
     number_bases: { name: 'Number Bases', description: 'Positional numeral systems (Binary, Hex, Octal, Decimal, Base64)' },
     typography: { name: 'Typography', description: 'Font size and print measurement units (px, pt, em, rem, pica)' },
     roman_unicode: { name: 'Roman & Unicode', description: 'Roman numerals and Unicode character conversion' },
-    uuid_guid: { name: 'UUID / GUID Generator', description: 'Generate and parse RFC 4122 compliant UUIDs (v4, v1, v7)' }
+    uuid_guid: { name: 'UUID / GUID Generator', description: 'Generate and parse RFC 4122 compliant UUIDs (v4, v1, v7)' },
+    hash_encoding: { name: 'Hash & Encoding', description: 'Base64, Hex, URL Encoding, HTML Entities, JWT Tokens, SHA-256' },
+    cron_schedule: { name: 'Cron & Schedule', description: 'Cron 5-field expressions, human text, Quartz, next trigger times' },
+    cidr_subnet: { name: 'Subnet & CIDR', description: 'IPv4 CIDR prefixes, subnet masks, wildcard masks, network/broadcast' },
+    bitwise_flags: { name: 'Bitwise & Permissions', description: 'Linux octal modes (0755), symbolic permissions, chmod, bitmasks' },
+    css_units: { name: 'CSS & Screen Units', description: 'CSS px, rem, em, pt, dp, % and fluid clamp() formulas' }
   },
   de: {
     length: { name: 'Länge', description: 'Entfernungs- und Längenberechnungen' },
@@ -279,7 +284,12 @@ const CATEGORY_TRANSLATIONS: Record<SupportedLanguage, Record<string, { name: st
     number_bases: { name: 'Zahlenbasis', description: 'Stellenwertsysteme (Binär, Hex, Oktal, Dezimal, Base64)' },
     typography: { name: 'Typografie', description: 'Schriftgrößen- und Druckmaßeinheiten (px, pt, em, rem, pica)' },
     roman_unicode: { name: 'Römisch & Unicode', description: 'Römische Zahlen und Unicode-Zeichenkonvertierung' },
-    uuid_guid: { name: 'UUID / GUID Generator', description: 'RFC 4122-konforme UUIDs generieren und analysieren' }
+    uuid_guid: { name: 'UUID / GUID Generator', description: 'RFC 4122-konforme UUIDs generieren und analysieren' },
+    hash_encoding: { name: 'Hash & Kodierung', description: 'Base64, Hex, URL-Kodierung, HTML-Entitäten, JWT-Tokens, SHA-256' },
+    cron_schedule: { name: 'Cron & Zeitplan', description: 'Cron 5-Feld-Ausdrücke, Klartext, Quartz, nächste Ausführungszeiten' },
+    cidr_subnet: { name: 'Subnetz & CIDR', description: 'IPv4 CIDR-Präfixe, Subnetzmasken, Wildcard-Masken, Netz/Broadcast' },
+    bitwise_flags: { name: 'Bitweise & Rechte', description: 'Linux Oktal-Rechte (0755), symbolische Rechte, chmod, Bitmasken' },
+    css_units: { name: 'CSS & Bildschirm-Einheiten', description: 'CSS px, rem, em, pt, dp, % und fluide clamp()-Formeln' }
   },
   es: {
     length: { name: 'Longitud', description: 'Conversiones de distancia y longitud espacial' },
@@ -300,7 +310,12 @@ const CATEGORY_TRANSLATIONS: Record<SupportedLanguage, Record<string, { name: st
     number_bases: { name: 'Bases numéricas', description: 'Sistemas numéricos (Binario, Hex, Octal, Decimal, Base64)' },
     typography: { name: 'Tipografía', description: 'Tamaños de fuente y medidas de impresión (px, pt, em, rem, pica)' },
     roman_unicode: { name: 'Romano y Unicode', description: 'Conversión de números romanos y caracteres Unicode' },
-    uuid_guid: { name: 'Generador UUID / GUID', description: 'Generar y analizar UUIDs compatibles con RFC 4122' }
+    uuid_guid: { name: 'Generador UUID / GUID', description: 'Generar y analizar UUIDs compatibles con RFC 4122' },
+    hash_encoding: { name: 'Hash y Codificación', description: 'Base64, Hex, Codificación URL, Entidades HTML, Tokens JWT, SHA-256' },
+    cron_schedule: { name: 'Cron y Horarios', description: 'Expresiones Cron de 5 campos, texto legible, Quartz, próximos tiempos' },
+    cidr_subnet: { name: 'Subred y CIDR', description: 'Prefijos CIDR IPv4, máscaras de subred, máscaras comodín, red/difusión' },
+    bitwise_flags: { name: 'Bit a Bit y Permisos', description: 'Modos octales Linux (0755), permisos simbólicos, chmod, máscaras' },
+    css_units: { name: 'Unidades CSS y Pantalla', description: 'CSS px, rem, em, pt, dp, % y fórmulas clamp() fluidas' }
   },
   fr: {
     length: { name: 'Longueur', description: 'Conversions de distance et de longueur spatiale' },
@@ -321,7 +336,12 @@ const CATEGORY_TRANSLATIONS: Record<SupportedLanguage, Record<string, { name: st
     number_bases: { name: 'Bases numériques', description: 'Systèmes de numération (Binaire, Hex, Octal, Décimal, Base64)' },
     typography: { name: 'Typographie', description: "Unités de taille de police et d'impression (px, pt, em, rem, pica)" },
     roman_unicode: { name: 'Romain & Unicode', description: 'Conversion de chiffres romains et caractères Unicode' },
-    uuid_guid: { name: 'Générateur UUID / GUID', description: 'Générer et analyser des UUID conformes à RFC 4122' }
+    uuid_guid: { name: 'Générateur UUID / GUID', description: 'Générer et analyser des UUID conformes à RFC 4122' },
+    hash_encoding: { name: 'Hachage et Encodage', description: 'Base64, Hex, Encodage URL, Entités HTML, Tokens JWT, SHA-256' },
+    cron_schedule: { name: 'Cron et Planification', description: 'Expressions Cron à 5 champs, texte lisible, Quartz, prochains déclenchements' },
+    cidr_subnet: { name: 'Sous-réseau et CIDR', description: 'Préfixes CIDR IPv4, masques de sous-réseau, masques génériques' },
+    bitwise_flags: { name: 'Bits et Permissions', description: 'Modes octaux Linux (0755), permissions symboliques, chmod, masques' },
+    css_units: { name: 'Unités CSS et Écran', description: 'CSS px, rem, em, pt, dp, % et formules clamp() fluides' }
   },
   it: {
     length: { name: 'Lunghezza', description: 'Conversioni di distanza e lunghezza spaziale' },
@@ -342,7 +362,12 @@ const CATEGORY_TRANSLATIONS: Record<SupportedLanguage, Record<string, { name: st
     number_bases: { name: 'Basi numeriche', description: 'Sistemi di numerazione (Binario, Hex, Ottale, Decimale, Base64)' },
     typography: { name: 'Tipografia', description: 'Dimensioni del carattere e unità di stampa (px, pt, em, rem, pica)' },
     roman_unicode: { name: 'Romano e Unicode', description: 'Conversione di numeri romani e caratteri Unicode' },
-    uuid_guid: { name: 'Generatore UUID / GUID', description: 'Genera e analizza UUID conformi a RFC 4122' }
+    uuid_guid: { name: 'Generatore UUID / GUID', description: 'Genera e analizza UUID conformi a RFC 4122' },
+    hash_encoding: { name: 'Hash e Codifica', description: 'Base64, Hex, Codifica URL, Entità HTML, Token JWT, SHA-256' },
+    cron_schedule: { name: 'Cron e Programmazione', description: 'Espressioni Cron a 5 campi, testo leggibile, Quartz, prossimi esecuzioni' },
+    cidr_subnet: { name: 'Sottorete e CIDR', description: 'Prefissi CIDR IPv4, maschere di sottorete, maschere wildcard, net/broadcast' },
+    bitwise_flags: { name: 'Bit a Bit e Permessi', description: 'Modalità ottali Linux (0755), permessi simbolici, chmod, maschere' },
+    css_units: { name: 'Unità CSS e Schermo', description: 'CSS px, rem, em, pt, dp, % e formule clamp() fluide' }
   }
 };
 

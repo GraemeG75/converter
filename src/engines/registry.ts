@@ -14,6 +14,13 @@ import { typographyCategory } from './typography';
 import { romanUnicodeCategory, intToRoman, romanToInt, charToUnicodeDetails } from './romanUnicode';
 import { uuidCategory, parseAndFormatUUID, NIL_GUID } from './uuid';
 
+// New Coding Engines
+import { hashEncodingCategory, decodeToPlaintext, encodeFromPlaintext } from './hashEncoding';
+import { cronScheduleCategory, parseCronExpression } from './cronSchedule';
+import { cidrSubnetCategory, parseSubnetInput } from './cidrSubnet';
+import { bitwiseFlagsCategory, parsePermissionInput } from './bitwiseFlags';
+import { cssUnitsCategory, convertCssUnits } from './cssUnits';
+
 export const ALL_CATEGORIES: CategoryDefinition[] = [
   lengthCategory,
   areaCategory,
@@ -33,7 +40,12 @@ export const ALL_CATEGORIES: CategoryDefinition[] = [
   numberBasesCategory,
   typographyCategory,
   romanUnicodeCategory,
-  uuidCategory
+  uuidCategory,
+  hashEncodingCategory,
+  cronScheduleCategory,
+  cidrSubnetCategory,
+  bitwiseFlagsCategory,
+  cssUnitsCategory
 ];
 
 export function getCategoryById(id: string): CategoryDefinition {
@@ -70,6 +82,26 @@ export function performConversion(
 
   if (category.id === 'uuid_guid') {
     return handleUuidConversion(toUnitId, inputValue, fromUnit, toUnit);
+  }
+
+  if (category.id === 'hash_encoding') {
+    return handleHashEncodingConversion(fromUnitId, toUnitId, inputValue, fromUnit, toUnit);
+  }
+
+  if (category.id === 'cron_schedule') {
+    return handleCronScheduleConversion(toUnitId, inputValue, fromUnit, toUnit);
+  }
+
+  if (category.id === 'cidr_subnet') {
+    return handleCidrSubnetConversion(toUnitId, inputValue, fromUnit, toUnit);
+  }
+
+  if (category.id === 'bitwise_flags') {
+    return handleBitwiseFlagsConversion(fromUnitId, toUnitId, inputValue, fromUnit, toUnit);
+  }
+
+  if (category.id === 'css_units') {
+    return handleCssUnitsConversion(fromUnitId, toUnitId, inputValue, fromUnit, toUnit);
   }
 
   // Standard numeric conversions (Linear & Affine)
@@ -121,7 +153,6 @@ function formatNumber(val: number, precision: number, scientific: boolean): stri
   if (scientific || (Math.abs(val) > 1e9 || (Math.abs(val) < 1e-6 && val !== 0))) {
     return val.toExponential(precision);
   }
-  // Trim trailing zeros neatly
   return Number(val.toFixed(precision)).toLocaleString('en-US', {
     maximumFractionDigits: precision
   });
@@ -138,7 +169,6 @@ function buildFormulaDescription(from: UnitDefinition, to: UnitDefinition): stri
 
 function handleCoordinatesConversion(fromId: string, toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
   let lat = 0, lng = 0;
-  
   if (fromId === 'geohash') {
     const decoded = decodeGeohash(inputStr);
     lat = decoded.lat;
@@ -279,3 +309,105 @@ function handleUuidConversion(toId: string, inputStr: string, fromUnit: UnitDefi
   };
 }
 
+function handleHashEncodingConversion(fromId: string, toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  const plainText = decodeToPlaintext(inputStr, fromId);
+  const encoded = encodeFromPlaintext(plainText, toId);
+
+  return {
+    fromValue: inputStr,
+    fromUnit,
+    toValue: encoded,
+    toUnit,
+    formattedOutput: encoded,
+    formulaDescription: `${fromUnit.name} ➔ Plaintext ➔ ${toUnit.name}`
+  };
+}
+
+function handleCronScheduleConversion(toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  const cronInfo = parseCronExpression(inputStr);
+  let output = cronInfo.humanText;
+
+  if (toId === 'cron_quartz') {
+    output = cronInfo.quartz;
+  } else if (toId === 'next_trigger_iso') {
+    output = cronInfo.nextTriggers.length > 0 ? cronInfo.nextTriggers[0].toISOString() : 'No trigger found';
+  } else if (toId === 'next_trigger_epoch') {
+    output = cronInfo.nextTriggers.length > 0 ? String(Math.floor(cronInfo.nextTriggers[0].getTime() / 1000)) : '0';
+  } else if (toId === 'interval_seconds') {
+    output = `${cronInfo.intervalSec} seconds`;
+  }
+
+  return {
+    fromValue: inputStr,
+    fromUnit,
+    toValue: output,
+    toUnit,
+    formattedOutput: output,
+    formulaDescription: cronInfo.humanText
+  };
+}
+
+function handleCidrSubnetConversion(toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  const subnet = parseSubnetInput(inputStr);
+  if (!subnet) {
+    return {
+      fromValue: inputStr,
+      fromUnit,
+      toValue: 'Invalid Subnet IP / CIDR',
+      toUnit,
+      formattedOutput: 'Invalid Subnet IP / CIDR',
+      formulaDescription: 'Please enter a valid IPv4 address or CIDR notation (e.g. 192.168.1.1/24)'
+    };
+  }
+
+  let out = subnet.subnetMaskStr;
+  if (toId === 'wildcard_mask') out = subnet.wildcardMaskStr;
+  else if (toId === 'network_address') out = subnet.networkStr;
+  else if (toId === 'broadcast_address') out = subnet.broadcastStr;
+  else if (toId === 'usable_range') out = subnet.usableRangeStr;
+  else if (toId === 'total_hosts') out = `${subnet.usableHosts} hosts (${subnet.totalHosts} total IPs)`;
+  else if (toId === 'binary_ip') out = subnet.binaryIpStr;
+  else if (toId === 'cidr_prefix') out = `${subnet.ipStr}/${subnet.prefixLen}`;
+
+  return {
+    fromValue: inputStr,
+    fromUnit,
+    toValue: out,
+    toUnit,
+    formattedOutput: out,
+    formulaDescription: `IP: ${subnet.ipStr} | Subnet /${subnet.prefixLen} | NetID: ${subnet.networkStr}`
+  };
+}
+
+function handleBitwiseFlagsConversion(fromId: string, toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  const perm = parsePermissionInput(inputStr, fromId);
+  let out = perm.symbolic;
+
+  if (toId === 'file_mode_octal') out = perm.octal;
+  else if (toId === 'chmod_command') out = perm.chmodCmd;
+  else if (toId === 'enum_mask') out = perm.enumStr;
+  else if (toId === 'integer_val') out = String(perm.intVal);
+  else if (toId === 'binary_flags') out = perm.binaryStr;
+
+  return {
+    fromValue: inputStr,
+    fromUnit,
+    toValue: out,
+    toUnit,
+    formattedOutput: out,
+    formulaDescription: `Octal: ${perm.octal} | Symbolic: ${perm.symbolic} | Int: ${perm.intVal}`
+  };
+}
+
+function handleCssUnitsConversion(fromId: string, toId: string, inputStr: string, fromUnit: UnitDefinition, toUnit: UnitDefinition): ConversionResult {
+  const result = convertCssUnits(inputStr, fromId, toId, 16);
+
+  return {
+    fromValue: inputStr,
+    fromUnit,
+    toValue: result,
+    toUnit,
+    formattedOutput: result,
+    formulaDescription: `Base 16px font-size ratio standard`
+  };
+}
