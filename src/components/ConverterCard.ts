@@ -12,8 +12,41 @@ import { renderCoordinateVisualizer } from '../visualizers/coordinateVisualizer'
 import { renderColorVisualizer } from '../visualizers/colorVisualizer';
 import { renderBitBoardVisualizer } from '../visualizers/bitBoardVisualizer';
 import { renderUuidVisualizer } from '../visualizers/uuidVisualizer';
+import { renderJwtVisualizer } from '../visualizers/jwtVisualizer';
+import { renderCronVisualizer } from '../visualizers/cronVisualizer';
+import { renderSubnetVisualizer } from '../visualizers/subnetVisualizer';
+import { renderPermissionVisualizer } from '../visualizers/permissionVisualizer';
+import { renderCssVisualizer } from '../visualizers/cssVisualizer';
 import { calculateTransferTime } from '../engines/data';
 import { parseColorInput } from '../engines/color';
+
+export function isSwapSupported(fromUnitId: string, toUnitId: string): boolean {
+  if (fromUnitId === toUnitId) return false;
+
+  // One-way / non-reversible units
+  const oneWayUnits = new Set([
+    'sha256',
+    'md5',
+    'jwt_decode',
+    'cron_human',
+    'cron_quartz',
+    'next_trigger_iso',
+    'next_trigger_epoch',
+    'interval_seconds',
+    'usable_range',
+    'total_hosts',
+    'clamp',
+    'dms',
+    'ddm',
+    'utm'
+  ]);
+
+  if (oneWayUnits.has(toUnitId) || oneWayUnits.has(fromUnitId)) {
+    return false;
+  }
+
+  return true;
+}
 
 export function renderConverterCard(
   container: HTMLElement,
@@ -29,6 +62,7 @@ export function renderConverterCard(
   const toId = currentToUnitId || storedUnits?.toUnitId || category.defaultToUnit;
   const inputVal = currentInputValue !== undefined ? currentInputValue : (storedUnits?.inputValue !== undefined ? storedUnits.inputValue : (category.defaultInputValue || '100'));
   const isFav = state.favorites.includes(category.id);
+  const canSwap = isSwapSupported(fromId, toId);
 
   const catInfo = getCategoryTranslation(category.id, lang);
 
@@ -87,14 +121,16 @@ export function renderConverterCard(
 
         <!-- Middle: Swap Button -->
         <div class="swap-divider">
-          <button id="swapUnitsBtn" class="swap-btn glass-btn" title="${t('swapUnits', lang)}">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="17 1 21 5 17 9"></polyline>
-              <line x1="3" y1="5" x2="21" y2="5"></line>
-              <polyline points="7 23 3 19 7 15"></polyline>
-              <line x1="21" y1="19" x2="3" y2="19"></line>
-            </svg>
-          </button>
+          ${canSwap ? `
+            <button id="swapUnitsBtn" class="swap-btn glass-btn" title="${t('swapUnits', lang)}">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="17 1 21 5 17 9"></polyline>
+                <line x1="3" y1="5" x2="21" y2="5"></line>
+                <polyline points="7 23 3 19 7 15"></polyline>
+                <line x1="21" y1="19" x2="3" y2="19"></line>
+              </svg>
+            </button>
+          ` : ''}
         </div>
 
         <!-- Right Side: Output Display -->
@@ -234,14 +270,16 @@ export function renderConverterCard(
     triggerUpdate(true);
   });
 
-  swapBtn.addEventListener('click', () => {
-    const temp = fromSelect.value;
-    fromSelect.value = toSelect.value;
-    toSelect.value = temp;
-    appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
-    trackConversion(category.id, fromSelect.value, toSelect.value);
-    triggerUpdate(true);
-  });
+  if (swapBtn) {
+    swapBtn.addEventListener('click', () => {
+      const temp = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = temp;
+      appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+      trackConversion(category.id, fromSelect.value, toSelect.value);
+      triggerUpdate(true);
+    });
+  }
 
   copyBtn.addEventListener('click', () => {
     const currentOutput = container.querySelector('#outputBox .output-value')?.textContent || result.formattedOutput;
@@ -333,6 +371,22 @@ function renderCategoryVisualizer(
       fromInputEl.value = selectedUuid;
       triggerUpdate();
     });
+  } else if (catId === 'hash_encoding') {
+    renderJwtVisualizer(slot, inputVal);
+  } else if (catId === 'cron_schedule') {
+    renderCronVisualizer(slot, inputVal);
+  } else if (catId === 'cidr_subnet') {
+    renderSubnetVisualizer(slot, inputVal, (newSubnetInput) => {
+      fromInputEl.value = newSubnetInput;
+      triggerUpdate();
+    });
+  } else if (catId === 'bitwise_flags') {
+    renderPermissionVisualizer(slot, inputVal, result.fromUnit.id, (newOctalInput) => {
+      fromInputEl.value = newOctalInput;
+      triggerUpdate();
+    });
+  } else if (catId === 'css_units') {
+    renderCssVisualizer(slot, inputVal);
   }
 }
 
