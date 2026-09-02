@@ -44,13 +44,15 @@ export function renderHeader(container: HTMLElement, onOpenSearch: () => void, o
         <div class="logo-badge ${theme === 'pride' ? 'pride-badge-glow' : ''}">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path>
-          </svg>
+          </svg>          
         </div>
         <div class="header-titles">
-          <h1>${t('appName', lang)} ${theme === 'pride' ? '✨' : ''}</h1>
+          <h1>${t('appName', lang)} ${theme === 'pride' ? '✨' : ''}</h1>          
           <span class="header-tagline">${theme === 'pride' ? 'Super Fabulous Edition 🏳️‍🌈' : t('tagline', lang)}</span>
         </div>
+        <a href="https://www.buymeacoffee.com/generatedpixel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height: 36px !important;width: 130px !important;" ></a>
       </div>
+
 
       <div class="header-actions">
         <button id="searchBtn" class="header-btn glass-btn" title="${t('searchTitle', lang)}">

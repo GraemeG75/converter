@@ -145,7 +145,9 @@ function initApp(): void {
 
       const activeCat = getCategoryById(state.activeCategory);
       renderConverterCard(mainSlot, activeCat);
-      trackCategoryView(activeCat.id, activeCat.name);
+      if (categoryChanged) {
+        trackCategoryView(activeCat.id, activeCat.name);
+      }
 
       if (!themeChanged) {
         renderHeader(headerSlot, openSearchModal, openHistoryDrawer);

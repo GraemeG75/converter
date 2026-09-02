@@ -1,7 +1,7 @@
 {
   "name": "guid.studio",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.8",
   "type": "module",
   "scripts": {
     "version:bump": "node scripts/bump-version.js",

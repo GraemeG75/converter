@@ -77,11 +77,12 @@ export function trackEvent(eventName: string, params: Record<string, any> = {}):
 /**
  * Track page view / category navigation
  */
-export function trackPageView(pageTitle: string, pagePath: string): void {
+export function trackPageView(pageTitle: string, pagePath: string, params: Record<string, any> = {}): void {
   trackEvent('page_view', {
     page_title: pageTitle,
     page_location: window.location.href,
     page_path: pagePath,
+    ...params,
   });
 }
 
@@ -93,7 +94,10 @@ export function trackCategoryView(categoryId: string, categoryName: string): voi
     item_list_id: categoryId,
     item_list_name: categoryName,
   });
-  trackPageView(`Guid.Studio - ${categoryName}`, `#${categoryId}`);
+  trackPageView(`Guid.Studio - ${categoryName}`, `#${categoryId}`, {
+    category_id: categoryId,
+    category_name: categoryName,
+  });
 }
 
 /**
