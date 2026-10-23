@@ -24,34 +24,111 @@ const ICON_SVGS: Record<string, string> = {
   key: '<path d="M21 2l-2 2m-1.5 1.5L4 19l-2 2 2 2 2-2 1.5-1.5M15.5 7.5l3 3M7 16l3 3"/><circle cx="17.5" cy="6.5" r="3.5"/>'
 };
 
+export type CategoryGroup = 'all' | 'units' | 'dev' | 'web' | 'favorites';
+
+const CATEGORY_GROUPS: Record<'units' | 'dev' | 'web', string[]> = {
+  units: ['length', 'area', 'volume', 'angles', 'temperatures', 'speed', 'mass', 'pressure', 'energy', 'power', 'time'],
+  dev: ['uuid_guid', 'number_bases', 'hash_encoding', 'cron_schedule', 'cidr_subnet', 'bitwise_flags', 'roman_unicode'],
+  web: ['color', 'css_units', 'typography', 'data', 'data_rate', 'coordinates']
+};
+
+let activeGroupFilter: CategoryGroup = 'all';
+
 export function renderCategoryNav(container: HTMLElement, onSelectCategory: (catId: string) => void): void {
   const state = appStateManager.getState();
   const activeId = state.activeCategory;
+  const favCount = state.favorites.length;
+
+  // If the active category is not in the currently active filter, reset filter to 'all' (unless active filter contains it)
+  if (activeGroupFilter === 'favorites' && !state.favorites.includes(activeId)) {
+    // Keep filter if user explicitly chose it, unless favs is empty
+    if (favCount === 0) {
+      activeGroupFilter = 'all';
+    }
+  } else if (activeGroupFilter !== 'all' && activeGroupFilter !== 'favorites') {
+    const allowed = CATEGORY_GROUPS[activeGroupFilter];
+    if (allowed && !allowed.includes(activeId)) {
+      activeGroupFilter = 'all';
+    }
+  }
+
+  const getFilteredCategories = () => {
+    if (activeGroupFilter === 'favorites') {
+      return ALL_CATEGORIES.filter(c => state.favorites.includes(c.id));
+    }
+    if (activeGroupFilter === 'units') {
+      return ALL_CATEGORIES.filter(c => CATEGORY_GROUPS.units.includes(c.id));
+    }
+    if (activeGroupFilter === 'dev') {
+      return ALL_CATEGORIES.filter(c => CATEGORY_GROUPS.dev.includes(c.id));
+    }
+    if (activeGroupFilter === 'web') {
+      return ALL_CATEGORIES.filter(c => CATEGORY_GROUPS.web.includes(c.id));
+    }
+    return ALL_CATEGORIES;
+  };
+
+  const visibleCategories = getFilteredCategories();
 
   container.innerHTML = `
-    <nav class="category-nav-scroll">
-      <div class="category-tabs">
-        ${ALL_CATEGORIES.map(cat => {
-          const isActive = cat.id === activeId;
-          const iconSvg = ICON_SVGS[cat.icon] || ICON_SVGS.ruler;
-          const isFav = state.favorites.includes(cat.id);
-          const catInfo = getCategoryTranslation(cat.id, state.language);
+    <nav class="category-nav-wrapper">
+      <!-- Filter Group Tabs -->
+      <div class="category-filter-bar">
+        <button class="filter-chip ${activeGroupFilter === 'all' ? 'active' : ''}" data-filter="all">
+          All (${ALL_CATEGORIES.length})
+        </button>
+        <button class="filter-chip ${activeGroupFilter === 'units' ? 'active' : ''}" data-filter="units">
+          Units & Physics (${CATEGORY_GROUPS.units.length})
+        </button>
+        <button class="filter-chip ${activeGroupFilter === 'dev' ? 'active' : ''}" data-filter="dev">
+          Dev & Code (${CATEGORY_GROUPS.dev.length})
+        </button>
+        <button class="filter-chip ${activeGroupFilter === 'web' ? 'active' : ''}" data-filter="web">
+          Web & Design (${CATEGORY_GROUPS.web.length})
+        </button>
+        <button class="filter-chip fav-filter-chip ${activeGroupFilter === 'favorites' ? 'active' : ''}" data-filter="favorites">
+          ★ Favorites ${favCount > 0 ? `(${favCount})` : ''}
+        </button>
+      </div>
 
-          return `
-            <button class="category-tab ${isActive ? 'active' : ''}" data-id="${cat.id}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                ${iconSvg}
-              </svg>
-              <span class="tab-name">${catInfo.name}</span>
-              ${isFav ? `<span class="fav-star" title="Favorited">★</span>` : ''}
-            </button>
-          `;
-        }).join('')}
+      <!-- Category Tabs Carousel/Grid -->
+      <div class="category-nav-scroll">
+        <div class="category-tabs">
+          ${visibleCategories.length === 0 ? `
+            <div class="empty-fav-hint">No favorites pinned yet. Click the ★ star on any converter to pin it here!</div>
+          ` : visibleCategories.map(cat => {
+            const isActive = cat.id === activeId;
+            const iconSvg = ICON_SVGS[cat.icon] || ICON_SVGS.ruler;
+            const isFav = state.favorites.includes(cat.id);
+            const catInfo = getCategoryTranslation(cat.id, state.language);
+
+            return `
+              <button class="category-tab ${isActive ? 'active' : ''}" data-id="${cat.id}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  ${iconSvg}
+                </svg>
+                <span class="tab-name">${catInfo.name}</span>
+                ${isFav ? `<span class="fav-star" title="Favorited">★</span>` : ''}
+              </button>
+            `;
+          }).join('')}
+        </div>
       </div>
     </nav>
   `;
 
-  // Attach click listeners
+  // Filter click handlers
+  container.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = chip.getAttribute('data-filter') as CategoryGroup;
+      if (filter) {
+        activeGroupFilter = filter;
+        renderCategoryNav(container, onSelectCategory);
+      }
+    });
+  });
+
+  // Attach tab click listeners
   container.querySelectorAll('.category-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const catId = btn.getAttribute('data-id');
