@@ -107,6 +107,31 @@ const CATEGORY_SEO_OVERRIDES: Record<string, { title: string; description: strin
     title: 'UUID & GUID Generator and Formatter — Guid.Studio',
     description: 'Generate and format RFC 4122 compliant UUID v4 and GUID strings. Format with hyphens, braces, or uppercase.',
     keywords: 'uuid generator, guid generator, uuid v4, format guid, remove hyphens uuid, nil guid'
+  },
+  hash_encoding: {
+    title: 'Hash, Base64 & JWT Encoding/Decoding Tools — Guid.Studio',
+    description: 'Encode and decode strings using Base64, Hex, URL encoding, HTML entities, MD5, SHA-256, and inspect JWT tokens.',
+    keywords: 'hash generator, base64 encoder, jwt decoder, sha256, md5 hash, url encode, developer tools'
+  },
+  cron_schedule: {
+    title: 'Cron Expression Parser & Schedule Timeline — Guid.Studio',
+    description: 'Parse standard cron expressions, convert to human-readable explanations, generate Quartz format, and preview upcoming execution times.',
+    keywords: 'cron parser, cron expression generator, crontab, cron schedule, next execution, quartz cron'
+  },
+  cidr_subnet: {
+    title: 'IPv4 CIDR & Subnet Mask Calculator — Guid.Studio',
+    description: 'Calculate subnet masks, wildcard masks, network and broadcast addresses, usable IP host ranges, and binary representations.',
+    keywords: 'subnet calculator, cidr calculator, ipv4 subnet, subnet mask, wildcard mask, usable hosts, network address'
+  },
+  bitwise_flags: {
+    title: 'Bitwise Flags & Linux File Permission Calculator — Guid.Studio',
+    description: 'Convert between chmod octal (755, 644), rwxrwxrwx symbolic permissions, and binary bit masks with interactive matrix.',
+    keywords: 'chmod calculator, linux permissions, file permissions, octal chmod, bitwise flags, unix permissions'
+  },
+  css_units: {
+    title: 'CSS Units & Fluid Responsive Typography Calculator — Guid.Studio',
+    description: 'Convert PX, REM, EM, VW, VH, and generate fluid clamp() typography calculations for responsive web designs.',
+    keywords: 'css unit converter, px to rem, fluid typography, css clamp generator, responsive design, rem to px'
   }
 };
 
@@ -254,7 +279,7 @@ export function injectGlobalJsonLd(): void {
           'name': 'What unit conversions does Guid.Studio support?',
           'acceptedAnswer': {
             '@type': 'Answer',
-            'text': 'Guid.Studio supports 19 conversion categories: Length, Area, Volume, Angles, Temperature, GPS Coordinates (DD, DMS, DDM, UTM, Geohash), Data Storage, Data Transfer Rate, Speed, Mass, Pressure, Energy, Power, Time/Unix Epoch, Color Formats (HEX, RGB, HSL, HSV, CMYK, Int), Number Bases (Binary, Octal, Decimal, Hex), Typography (PX, REM, EM, PT), Roman Numerals & Unicode, and UUID/GUID Generation.'
+            'text': 'Guid.Studio supports 24 conversion categories: Length, Area, Volume, Angles, Temperature, GPS Coordinates (DD, DMS, DDM, UTM, Geohash), Data Storage, Data Transfer Rate, Speed, Mass, Pressure, Energy, Power, Time/Unix Epoch, Color Formats (HEX, RGB, HSL, HSV, CMYK, Int), Number Bases, Typography, Roman Numerals & Unicode, UUID/GUID Generation, Hash & Encoding, Cron Schedules, Subnet & CIDR, Bitwise & Permissions, and CSS & Screen Units.'
           }
         },
         {
