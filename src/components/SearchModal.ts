@@ -77,7 +77,7 @@ export function renderSearchModal(
       const translatedUnitName = getUnitNameTranslation(item.unit.id, item.unit.name, lang);
 
       return `
-        <div class="search-item ${idx === 0 ? 'selected' : ''}" data-cat="${item.category.id}" data-unit="${item.unit.id}">
+        <div class="search-item ${idx === 0 ? 'selected' : ''}" data-index="${idx}" data-cat="${item.category.id}" data-unit="${item.unit.id}">
           <div class="search-item-left">
             <span class="search-unit-name">${translatedUnitName}</span>
             <span class="search-unit-symbol">${item.unit.symbol}</span>
@@ -87,8 +87,13 @@ export function renderSearchModal(
       `;
     }).join('');
 
-    // Attach click handlers
-    list.querySelectorAll('.search-item').forEach(el => {
+    // Attach click and hover handlers
+    list.querySelectorAll<HTMLElement>('.search-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const items = list.querySelectorAll<HTMLElement>('.search-item');
+        items.forEach(item => item.classList.toggle('selected', item === el));
+      });
+
       el.addEventListener('click', () => {
         const catId = el.getAttribute('data-cat');
         const unitId = el.getAttribute('data-unit');
@@ -99,6 +104,37 @@ export function renderSearchModal(
       });
     });
   };
+
+  input.addEventListener('keydown', (e) => {
+    const items = list.querySelectorAll<HTMLElement>('.search-item');
+    if (items.length === 0) {
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const currentSelected = list.querySelector('.search-item.selected') as HTMLElement | null;
+      let idx = currentSelected ? parseInt(currentSelected.getAttribute('data-index') || '0', 10) : 0;
+      idx = (idx + 1) % items.length;
+      items.forEach((item, i) => item.classList.toggle('selected', i === idx));
+      items[idx]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const currentSelected = list.querySelector('.search-item.selected') as HTMLElement | null;
+      let idx = currentSelected ? parseInt(currentSelected.getAttribute('data-index') || '0', 10) : 0;
+      idx = (idx - 1 + items.length) % items.length;
+      items.forEach((item, i) => item.classList.toggle('selected', i === idx));
+      items[idx]?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const currentSelected = list.querySelector('.search-item.selected') as HTMLElement | null;
+      if (currentSelected) {
+        currentSelected.click();
+      } else if (items[0]) {
+        items[0].click();
+      }
+    }
+  });
 
   let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   input.addEventListener('input', () => {
@@ -116,15 +152,19 @@ export function renderSearchModal(
     if (e.target === backdrop) onClose();
   });
 
-  window.addEventListener('keydown', function handleEsc(e) {
+  const handleEsc = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       onClose();
       window.removeEventListener('keydown', handleEsc);
     }
-  });
+  };
+  window.addEventListener('keydown', handleEsc);
 
-  // Initial render
-  setTimeout(() => renderResults(''), 50);
+  // Initial render and immediate focus
+  setTimeout(() => {
+    renderResults('');
+    input.focus();
+  }, 50);
 
   return backdrop;
 }
