@@ -50,7 +50,9 @@ export function renderHeader(container: HTMLElement, onOpenSearch: () => void, o
           <h1>${t('appName', lang)} ${theme === 'pride' ? '✨' : ''}</h1>          
           <span class="header-tagline">${theme === 'pride' ? 'Super Fabulous Edition 🏳️‍🌈' : t('tagline', lang)}</span>
         </div>
-        <a href="https://www.buymeacoffee.com/generatedpixel" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height: 36px !important;width: 130px !important;" ></a>
+        <a href="https://www.buymeacoffee.com/generatedpixel" target="_blank" rel="noopener noreferrer" class="header-bmac-link" title="Buy Me a Coffee">
+          <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" class="header-bmac-img">
+        </a>
       </div>
 
 
