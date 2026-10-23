@@ -40,14 +40,36 @@ class StateManager {
   }
 
   public addHistoryItem(item: Omit<HistoryItem, 'id' | 'timestamp'>): void {
+    if (!item.fromValue || item.fromValue.trim() === '') {
+      return;
+    }
+
+    // Avoid duplicate adjacent history items
+    const topItem = this.state.history[0];
+    if (
+      topItem &&
+      topItem.categoryId === item.categoryId &&
+      topItem.fromValue === item.fromValue &&
+      topItem.fromUnitId === item.fromUnitId &&
+      topItem.toUnitId === item.toUnitId
+    ) {
+      return;
+    }
+
     const newItem: HistoryItem = {
       ...item,
       id: Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
       timestamp: Date.now()
     };
     // Keep max 30 history items
-    const updatedHistory = [newItem, ...this.state.history.slice(0, 29)];
+    const updatedHistory = [newItem, ...this.state.history.filter(h => 
+      !(h.categoryId === item.categoryId && h.fromValue === item.fromValue && h.fromUnitId === item.fromUnitId && h.toUnitId === item.toUnitId)
+    ).slice(0, 29)];
     this.setState({ history: updatedHistory });
+  }
+
+  public removeHistoryItem(id: string): void {
+    this.setState({ history: this.state.history.filter(item => item.id !== id) });
   }
 
   public clearHistory(): void {

@@ -41,8 +41,10 @@ export interface HistoryItem {
   categoryName: string;
   fromValue: string;
   fromSymbol: string;
+  fromUnitId?: string;
   toValue: string;
   toSymbol: string;
+  toUnitId?: string;
 }
 
 export type SupportedLanguage = 'en' | 'de' | 'es' | 'fr' | 'it';
