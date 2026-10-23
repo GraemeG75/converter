@@ -105,7 +105,8 @@ export function performConversion(
   }
 
   // Standard numeric conversions (Linear & Affine)
-  const numInput = parseFloat(inputValue);
+  const sanitizedInput = typeof inputValue === 'string' ? inputValue.trim().replace(/,/g, '') : String(inputValue);
+  const numInput = parseFloat(sanitizedInput);
   if (isNaN(numInput)) {
     return {
       fromValue: inputValue,
