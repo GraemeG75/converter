@@ -57,14 +57,29 @@ function initApp(): void {
 
   renderFooter(footerSlot);
 
-  // Global Keyboard Shortcuts (Ctrl+K or / for Search)
+  // Global Keyboard Shortcuts (Ctrl+K or / for Search, S for swap, H for history)
   window.addEventListener('keydown', (e) => {
+    const isTyping = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'SELECT' || document.activeElement?.tagName === 'TEXTAREA';
+
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       openSearchModal();
-    } else if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'SELECT') {
+    } else if (e.key === '/' && !isTyping) {
       e.preventDefault();
       openSearchModal();
+    } else if (e.key.toLowerCase() === 's' && !isTyping && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const swapBtn = document.getElementById('swapUnitsBtn') as HTMLButtonElement | null;
+      if (swapBtn) {
+        e.preventDefault();
+        swapBtn.click();
+      }
+    } else if (e.key.toLowerCase() === 'h' && !isTyping && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      if (modalSlot.children.length > 0) {
+        modalSlot.innerHTML = '';
+      } else {
+        openHistoryDrawer();
+      }
     }
   });
 
@@ -86,8 +101,10 @@ function initApp(): void {
   const openHistoryDrawer = () => {
     modalSlot.innerHTML = '';
     const drawerEl = renderHistoryDrawer(
-      (catId) => {
+      (catId, fromUnitId, toUnitId, inputValue) => {
         appStateManager.setState({ activeCategory: catId });
+        const cat = getCategoryById(catId);
+        renderConverterCard(mainSlot, cat, fromUnitId, toUnitId, inputValue);
       },
       () => {
         modalSlot.innerHTML = '';
