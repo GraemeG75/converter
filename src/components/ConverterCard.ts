@@ -94,7 +94,7 @@ export function renderConverterCard(
         <!-- Left Side: From Input -->
         <div class="converter-section">
           <label class="section-label" for="fromValInput">${t('inputValue', lang)}</label>
-          <div class="input-group">
+          <div class="input-group input-with-actions">
             <input
               type="text"
               id="fromValInput"
@@ -103,6 +103,15 @@ export function renderConverterCard(
               placeholder="${t('enterValue', lang)}"
               autocomplete="off"
             />
+            <div class="input-actions-cluster">
+              <button id="clearInputBtn" class="input-action-btn ${inputVal ? '' : 'hidden'}" title="Clear Input">✕</button>
+              <button id="pasteInputBtn" class="input-action-btn" title="Paste from Clipboard">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="select-group">
             <label class="unit-label" for="fromUnitSelect">${t('fromUnit', lang)}</label>
@@ -139,9 +148,12 @@ export function renderConverterCard(
           <div class="output-box glass-output" id="outputBox">
             <span class="output-value">${escapeHtml(result.formattedOutput)}</span>
             <button id="copyOutputBtn" class="copy-btn glass-btn" title="${t('copyOutput', lang)}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <svg class="check-icon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </button>
           </div>
@@ -197,6 +209,35 @@ export function renderConverterCard(
   const favBtn = container.querySelector('#favToggleBtn') as HTMLButtonElement;
   const precisionSel = container.querySelector('#precisionSelect') as HTMLSelectElement;
   const sciCheck = container.querySelector('#scientificCheck') as HTMLInputElement;
+  const clearInputBtn = container.querySelector('#clearInputBtn') as HTMLButtonElement | null;
+  const pasteInputBtn = container.querySelector('#pasteInputBtn') as HTMLButtonElement | null;
+
+  const recordCurrentConversionToHistory = () => {
+    const currentVal = fromInput.value;
+    if (!currentVal || currentVal.trim() === '') {
+      return;
+    }
+    const currentRes = performConversion(
+      category,
+      fromSelect.value,
+      toSelect.value,
+      currentVal,
+      appStateManager.getState().precision,
+      appStateManager.getState().scientificNotation
+    );
+    if (currentRes.formattedOutput && !currentRes.formattedOutput.includes('Invalid')) {
+      appStateManager.addHistoryItem({
+        categoryId: category.id,
+        categoryName: category.name,
+        fromValue: currentVal,
+        fromSymbol: fromSelect.options[fromSelect.selectedIndex]?.text || '',
+        fromUnitId: fromSelect.value,
+        toValue: currentRes.formattedOutput,
+        toSymbol: toSelect.options[toSelect.selectedIndex]?.text || '',
+        toUnitId: toSelect.value
+      });
+    }
+  };
 
   const triggerUpdate = (preserveFocus = false) => {
     const focusedEl = document.activeElement as HTMLElement | null;
@@ -241,6 +282,10 @@ export function renderConverterCard(
       formulaTextEl.textContent = currentResult.formulaDescription || '';
     }
 
+    if (clearInputBtn) {
+      clearInputBtn.classList.toggle('hidden', fromInput.value.trim().length === 0);
+    }
+
     const visualizerSlot = container.querySelector('#visualizerSlot') as HTMLElement;
     if (visualizerSlot) {
       renderCategoryVisualizer(visualizerSlot, category.id, currentResult, fromInput.value, fromInput, () => triggerUpdate(true));
@@ -251,31 +296,65 @@ export function renderConverterCard(
     updateOutputOnly();
   });
 
+  fromInput.addEventListener('blur', () => {
+    recordCurrentConversionToHistory();
+  });
+
+  fromInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      recordCurrentConversionToHistory();
+    }
+  });
+
+  if (clearInputBtn) {
+    clearInputBtn.addEventListener('click', () => {
+      fromInput.value = '';
+      fromInput.focus();
+      updateOutputOnly();
+    });
+  }
+
+  if (pasteInputBtn) {
+    pasteInputBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          fromInput.value = text.trim();
+          updateOutputOnly();
+          recordCurrentConversionToHistory();
+          triggerUpdate(true);
+          showToast('Pasted from clipboard');
+        }
+      } catch {
+        showToast('Clipboard permission denied');
+      }
+    });
+  }
+
   fromSelect.addEventListener('change', () => {
     appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
-    appStateManager.addHistoryItem({
-      categoryId: category.id,
-      categoryName: category.name,
-      fromValue: fromInput.value,
-      fromSymbol: fromSelect.options[fromSelect.selectedIndex].text,
-      toValue: result.formattedOutput,
-      toSymbol: toSelect.options[toSelect.selectedIndex].text
-    });
+    recordCurrentConversionToHistory();
     trackConversion(category.id, fromSelect.value, toSelect.value);
     triggerUpdate(true);
   });
+
   toSelect.addEventListener('change', () => {
     appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+    recordCurrentConversionToHistory();
     trackConversion(category.id, fromSelect.value, toSelect.value);
     triggerUpdate(true);
   });
 
   if (swapBtn) {
     swapBtn.addEventListener('click', () => {
+      swapBtn.classList.add('rotating');
+      setTimeout(() => swapBtn.classList.remove('rotating'), 350);
+
       const temp = fromSelect.value;
       fromSelect.value = toSelect.value;
       toSelect.value = temp;
       appStateManager.setCategoryUnits(category.id, fromSelect.value, toSelect.value, fromInput.value);
+      recordCurrentConversionToHistory();
       trackConversion(category.id, fromSelect.value, toSelect.value);
       triggerUpdate(true);
     });
@@ -285,6 +364,20 @@ export function renderConverterCard(
     const currentOutput = container.querySelector('#outputBox .output-value')?.textContent || result.formattedOutput;
     navigator.clipboard.writeText(currentOutput).then(() => {
       showToast(t('copiedToast', lang));
+      recordCurrentConversionToHistory();
+
+      const copyIcon = copyBtn.querySelector('.copy-icon');
+      const checkIcon = copyBtn.querySelector('.check-icon');
+      if (copyIcon && checkIcon) {
+        copyIcon.classList.add('hidden');
+        checkIcon.classList.remove('hidden');
+        copyBtn.classList.add('copy-success');
+        setTimeout(() => {
+          copyIcon.classList.remove('hidden');
+          checkIcon.classList.add('hidden');
+          copyBtn.classList.remove('copy-success');
+        }, 1800);
+      }
     }).catch(() => {
       showToast(t('copiedToast', lang));
     });
@@ -324,22 +417,35 @@ function renderCategoryVisualizer(
   triggerUpdate: () => void
 ): void {
   if (catId === 'angles') {
-    const degVal = typeof result.fromValue === 'number' ? (result.fromUnit.id === 'deg' ? result.fromValue : result.toValue as number) : parseFloat(inputVal);
-    renderProtractorVisualizer(slot, isNaN(degVal) ? 45 : degVal);
+    const degVal = typeof result.fromValue === 'number' ? (result.fromUnit.id === 'deg' ? result.fromValue : result.toValue as number) : parseFloat(inputVal.replace(/,/g, ''));
+    renderProtractorVisualizer(slot, isNaN(degVal) ? 45 : degVal, (newDeg) => {
+      fromInputEl.value = String(newDeg);
+      triggerUpdate();
+    });
   } else if (catId === 'temperatures') {
-    const num = typeof result.fromValue === 'number' ? result.fromValue : parseFloat(inputVal);
-    // Convert to celsius base if needed
+    const num = typeof result.fromValue === 'number' ? result.fromValue : parseFloat(inputVal.replace(/,/g, ''));
     const celsius = result.fromUnit.toBase ? result.fromUnit.toBase(isNaN(num) ? 25 : num) : 25;
-    renderThermometerVisualizer(slot, celsius);
+    renderThermometerVisualizer(slot, celsius, (newC) => {
+      // Convert celsius to current fromUnit
+      const convertedInput = result.fromUnit.fromBase ? result.fromUnit.fromBase(newC) : newC;
+      fromInputEl.value = Number(convertedInput.toFixed(2)).toString();
+      triggerUpdate();
+    });
   } else if (catId === 'coordinates') {
     const parts = inputVal.split(',').map(s => parseFloat(s.trim()));
     const lat = parts[0] || 37.7749;
     const lng = parts[1] || -122.4194;
-    renderCoordinateVisualizer(slot, lat, lng);
+    renderCoordinateVisualizer(slot, lat, lng, (newLat, newLng) => {
+      fromInputEl.value = `${newLat}, ${newLng}`;
+      triggerUpdate();
+    });
   } else if (catId === 'color') {
     const colorInfo = parseColorInput(inputVal);
     if (colorInfo) {
-      renderColorVisualizer(slot, colorInfo.hex, colorInfo.rgb);
+      renderColorVisualizer(slot, colorInfo.hex, colorInfo.rgb, (newHex) => {
+        fromInputEl.value = newHex;
+        triggerUpdate();
+      });
     }
   } else if (catId === 'number_bases') {
     let bigVal = 0n;
@@ -362,7 +468,7 @@ function renderCategoryVisualizer(
     slot.innerHTML = `
       <div class="visualizer-card glass-panel">
         <div class="visualizer-header">
-          <span class="visualizer-title">Estimated Download Time (1 GB File): ${estTime}</span>
+          <span class="visualizer-title">⚡ Estimated Download Time (1 GB File): ${estTime}</span>
         </div>
       </div>
     `;
